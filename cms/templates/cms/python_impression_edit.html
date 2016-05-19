@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+
+{% block title %}プログラムの編集{% endblock title %}
+
+{% block content %}
+    <h3 class="page-header">プログラムの編集</h3>
+    {% if python_impression_id %}
+    <form action="{% url 'cms:python_impression_mod' python_book_id=python_book_id python_impression_id=python_impression_id %}" method="post" class="form-horizontal" role="form">
+    {% else %}
+    <form action="{% url 'cms:python_impression_add' python_book_id=python_book_id %}" method="post" class="form-horizontal" role="form">
+    {% endif %}
+      {% csrf_token %}
+      {{ form|bootstrap_horizontal }}
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">送信</button>
+        </div>
+      </div>
+    </form>
+    <a href="{% url 'cms:python_impression_list' python_book_id=python_book_id %}" class="btn btn-default btn-sm">戻る</a>
+{% endblock content %}

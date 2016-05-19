@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}プログラムのソース{% endblock title %}
+
+{% block extrahead %}
+<script>
+$(function() {
+  $('.del_confirm').on('click', function () {
+     $("#del_pk").text($(this).attr("pk"));
+     $('#del_url').attr('href', $(this).attr("url"));
+  });
+});
+</script>
+<style>
+table {
+  margin-top: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    <h3 class="page-header">プログラムの一覧 <small>{{ python_book.func_name }}</small></h3>
+    <a href="{% url 'cms:python_impression_add' python_book_id=python_book.id %}" class="btn btn-default btn-sm">追加</a>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+            <td>ソース</td>
+            <td>操作</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for python_impression in python_impressions %}
+        <tr>
+          <td>{{ python_impression.comment|linebreaksbr }}</td>
+          <td>
+            <a href="{% url 'cms:python_impression_mod' python_book_id=python_book.id python_impression_id=python_impression.id %}" class="btn btn-default btn-sm">修正</a>
+            <button class="btn btn-default btn-sm del_confirm" data-toggle="modal" data-target="#deleteModal" pk="{{ python_impression.id }}" url="{% url 'cms:python_impression_del' python_book_id=python_book.id python_impression_id=python_impression.id %}">削除</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+      {% endif %}
+      {% for linkpage in page_obj.paginator.page_range %}
+        {% ifequal linkpage page_obj.number %}
+          <li  class="active"><a href="#">{{ linkpage }}</a></li>
+        {% else %}
+          <li><a href="?page={{ linkpage }}">{{ linkpage }}</a></li>
+        {% endifequal %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+      {% endif %}
+    </ul>
+    {% endif %}
+
+    <div>
+      <a href="{% url 'cms:python_book_list' %}" class="btn btn-default btn-sm">戻る</a>
+    </div>
+
+{# 削除を確認するモーダル ダイアログ #}
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="deleteModalLabel">プログラムの削除</h4>
+      </div>
+      <div class="modal-body">
+        <p>本当にID: <span id= "del_pk"></span> 削除しますか?</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" id="del_url">OK</a>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
